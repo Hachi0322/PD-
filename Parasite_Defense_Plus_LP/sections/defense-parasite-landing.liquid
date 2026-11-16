@@ -1,0 +1,573 @@
+{% liquid
+  assign featured_product = section.settings.product
+  assign product_variant = featured_product.selected_or_first_available_variant
+  assign contact_form_id = 'DppOrderRequest-' | append: section.id
+  assign product_form_id = 'DppProductForm-' | append: section.id
+%}
+
+<section class="dpp" id="dpp-{{ section.id }}">
+  <style>
+    #dpp-{{ section.id }} {
+      --dpp-paper: #f5f0e5;
+      --dpp-ink: #172a32;
+      --dpp-green: #35534b;
+      --dpp-green-dark: #233d37;
+      --dpp-gold: #d7ad61;
+      --dpp-red: #bd211b;
+      --dpp-muted: #6d7773;
+      --dpp-white: #fffdf8;
+      --dpp-line: #d8d1c3;
+      color: var(--dpp-ink);
+      background: var(--dpp-paper);
+      font-family: var(--font-body-family, sans-serif);
+    }
+    #dpp-{{ section.id }} *,
+    #dpp-{{ section.id }} *::before,
+    #dpp-{{ section.id }} *::after { box-sizing: border-box; }
+    #dpp-{{ section.id }} .dpp-wrap { width: min(1120px, calc(100% - 40px)); margin-inline: auto; }
+    #dpp-{{ section.id }} a { color: inherit; }
+    #dpp-{{ section.id }} .dpp-button {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
+      padding: 12px 21px; border: 0; border-radius: 999px; color: var(--dpp-white);
+      background: var(--dpp-red); cursor: pointer; font-size: 12px; font-weight: 850;
+      letter-spacing: .04em; text-decoration: none;
+    }
+    #dpp-{{ section.id }} .dpp-button:hover { background: #991b17; }
+    #dpp-{{ section.id }} .dpp-hero {
+      position: relative; overflow: hidden; padding: 76px 0 82px;
+      background: radial-gradient(ellipse at 82% 50%, rgba(215,173,97,.18), transparent 34%), var(--dpp-paper);
+    }
+    #dpp-{{ section.id }} .dpp-hero-grid {
+      display: grid; grid-template-columns: 1fr .82fr; align-items: center; gap: 65px;
+    }
+    #dpp-{{ section.id }} .dpp-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; color: var(--dpp-green);
+      font-size: 10px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase;
+    }
+    #dpp-{{ section.id }} .dpp-eyebrow::before { width: 22px; height: 2px; background: var(--dpp-gold); content: ""; }
+    #dpp-{{ section.id }} .dpp-hero h1 {
+      max-width: 610px; margin: 18px 0; font-family: Georgia,serif;
+      font-size: clamp(42px,6vw,72px); font-weight: 500; letter-spacing: -.055em; line-height: .98;
+    }
+    #dpp-{{ section.id }} .dpp-hero h1 em { color: var(--dpp-green); }
+    #dpp-{{ section.id }} .dpp-copy { max-width: 485px; color: #5e6a64; font-size: 15px; line-height: 1.75; }
+    #dpp-{{ section.id }} .dpp-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 17px; margin-top: 24px; }
+    #dpp-{{ section.id }} .dpp-text-link { font-size: 12px; font-weight: 800; text-underline-offset: 4px; }
+    #dpp-{{ section.id }} .dpp-note { margin: 22px 0 0; color: var(--dpp-muted); font-size: 10px; line-height: 1.5; }
+    #dpp-{{ section.id }} .dpp-hero-art {
+      position: relative; min-height: 420px; display: grid; place-items: center; overflow: hidden;
+      border-radius: 5px; color: var(--dpp-white); background: var(--dpp-green-dark);
+      box-shadow: 0 18px 50px rgba(32,45,39,.12); isolation: isolate;
+    }
+    #dpp-{{ section.id }} .dpp-hero-art::before,
+    #dpp-{{ section.id }} .dpp-poster::before,
+    #dpp-{{ section.id }} .dpp-video::before {
+      position: absolute; z-index: -1; inset: 0;
+      background: radial-gradient(ellipse at 50% 35%,rgba(215,173,97,.25),transparent 36%),
+        repeating-linear-gradient(130deg,transparent 0 34px,rgba(255,255,255,.025) 35px 36px);
+      content: "";
+    }
+    #dpp-{{ section.id }} .dpp-hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #dpp-{{ section.id }} .dpp-hero-copy { position: absolute; inset: 25px 20px auto; text-align: center; }
+    #dpp-{{ section.id }} .dpp-hero-copy small { color: var(--dpp-gold); font-size: 9px; font-weight: 900; letter-spacing: .2em; }
+    #dpp-{{ section.id }} .dpp-hero-copy strong {
+      display: block; margin-top: 8px; font-family: Georgia,serif; font-size: clamp(23px,3vw,34px);
+      font-weight: 500; line-height: 1;
+    }
+    #dpp-{{ section.id }} .dpp-bottle {
+      position: relative; width: 112px; height: 190px; margin-top: 58px; border: 1px solid rgba(255,255,255,.25);
+      border-radius: 17px 17px 22px 22px; background: linear-gradient(90deg,#1d302d,#40594e 45%,#203630);
+      box-shadow: 18px 23px 34px rgba(0,0,0,.32);
+    }
+    #dpp-{{ section.id }} .dpp-bottle::before {
+      position: absolute; top: -23px; left: 34px; width: 44px; height: 25px; border-radius: 5px 5px 1px 1px;
+      background: repeating-linear-gradient(90deg,#c49a52 0 4px,#d6b36f 5px 8px); content: "";
+    }
+    #dpp-{{ section.id }} .dpp-bottle-label {
+      position: absolute; top: 57px; right: 7px; left: 7px; padding: 12px 4px;
+      color: var(--dpp-ink); background: #f1e7cf; text-align: center;
+    }
+    #dpp-{{ section.id }} .dpp-bottle-label b { font-family: Georgia,serif; font-size: 14px; line-height: 1; }
+    #dpp-{{ section.id }} .dpp-stamp {
+      position: absolute; right: 18px; bottom: 58px; width: 70px; height: 70px; display: grid;
+      place-items: center; border: 1px solid var(--dpp-gold); border-radius: 50%; color: var(--dpp-gold);
+      font-size: 8px; font-weight: 900; line-height: 1.4; text-align: center; transform: rotate(12deg);
+    }
+    #dpp-{{ section.id }} .dpp-hero-foot {
+      position: absolute; right: 15px; bottom: 17px; left: 15px; color: #e6ddc9;
+      font-size: 8px; letter-spacing: .14em; text-align: center;
+    }
+    #dpp-{{ section.id }} .dpp-section { padding: 76px 0; }
+    #dpp-{{ section.id }} .dpp-heading { max-width: 650px; margin: 0 auto 34px; text-align: center; }
+    #dpp-{{ section.id }} .dpp-heading h2,
+    #dpp-{{ section.id }} .dpp-order-intro h2 {
+      margin: 12px 0; font-family: Georgia,serif; font-size: clamp(32px,4vw,47px);
+      font-weight: 500; letter-spacing: -.04em; line-height: 1.05;
+    }
+    #dpp-{{ section.id }} .dpp-heading p,
+    #dpp-{{ section.id }} .dpp-order-intro p { color: var(--dpp-muted); font-size: 13px; line-height: 1.7; }
+    #dpp-{{ section.id }} .dpp-poster-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+    #dpp-{{ section.id }} .dpp-poster {
+      position: relative; min-height: 340px; display: flex; flex-direction: column; align-items: center;
+      justify-content: space-between; overflow: hidden; padding: 24px 18px 20px; color: white;
+      background: #3a5549; text-align: center; isolation: isolate;
+    }
+    #dpp-{{ section.id }} .dpp-poster:nth-child(3n+2) { background: #772b26; }
+    #dpp-{{ section.id }} .dpp-poster:nth-child(3n) { background: #283a43; }
+    #dpp-{{ section.id }} .dpp-poster-image { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #dpp-{{ section.id }} .dpp-poster-tag { color: #efd59f; font-size: 9px; font-weight: 900; letter-spacing: .18em; }
+    #dpp-{{ section.id }} .dpp-poster h3 { max-width: 250px; margin: 16px 0 0; font-family: Georgia,serif; font-size: 29px; font-weight: 500; line-height: 1.05; }
+    #dpp-{{ section.id }} .dpp-poster p { max-width: 220px; margin: 0; color: rgba(255,255,255,.82); font-size: 11px; line-height: 1.5; }
+    #dpp-{{ section.id }} .dpp-small-bottle {
+      position: relative; width: 70px; height: 120px; margin: 18px 0; border: 1px solid rgba(255,255,255,.2);
+      border-radius: 12px 12px 16px 16px; background: linear-gradient(90deg,#263d36,#587361,#263d36);
+      box-shadow: 8px 12px 20px rgba(0,0,0,.24);
+    }
+    #dpp-{{ section.id }} .dpp-small-bottle::before {
+      position: absolute; top: -14px; left: 21px; width: 28px; height: 15px;
+      border-radius: 3px 3px 0 0; background: var(--dpp-gold); content: "";
+    }
+    #dpp-{{ section.id }} .dpp-small-bottle::after {
+      position: absolute; top: 42px; right: 4px; left: 4px; height: 38px; color: var(--dpp-green);
+      background: #eee3c9; content: "DEFENSE"; font-size: 7px; font-weight: 900; line-height: 38px;
+    }
+    #dpp-{{ section.id }} .dpp-ads { background: #e9e3d7; }
+    #dpp-{{ section.id }} .dpp-video-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+    #dpp-{{ section.id }} .dpp-video-card { overflow: hidden; border-radius: 7px; background: var(--dpp-white); }
+    #dpp-{{ section.id }} .dpp-video {
+      position: relative; min-height: 265px; display: grid; place-items: center; overflow: hidden;
+      color: white; background: linear-gradient(135deg,#203b34,#426051); isolation: isolate;
+    }
+    #dpp-{{ section.id }} .dpp-video:nth-child(2) { background: linear-gradient(135deg,#512b27,#8b3c31); }
+    #dpp-{{ section.id }} .dpp-video iframe,
+    #dpp-{{ section.id }} .dpp-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    #dpp-{{ section.id }} .dpp-video-copy { padding: 24px; text-align: center; }
+    #dpp-{{ section.id }} .dpp-video-copy span { color: #eed29a; font-size: 9px; font-weight: 900; letter-spacing: .18em; }
+    #dpp-{{ section.id }} .dpp-video-copy strong {
+      display: block; max-width: 340px; margin: 12px auto 0; font-family: Georgia,serif;
+      font-size: clamp(25px,3vw,38px); font-weight: 500; line-height: 1.05;
+    }
+    #dpp-{{ section.id }} .dpp-video-caption { padding: 15px 19px; }
+    #dpp-{{ section.id }} .dpp-video-caption h3 { margin: 0; font-size: 14px; }
+    #dpp-{{ section.id }} .dpp-video-caption p { margin: 5px 0 0; color: var(--dpp-muted); font-size: 11px; }
+    #dpp-{{ section.id }} .dpp-order { padding: 78px 0 88px; }
+    #dpp-{{ section.id }} .dpp-order-layout { display: grid; grid-template-columns: .7fr 1.3fr; align-items: start; gap: 48px; }
+    #dpp-{{ section.id }} .dpp-order-intro { position: sticky; top: 24px; }
+    #dpp-{{ section.id }} .dpp-order-intro h2 { font-size: clamp(35px,4.4vw,52px); }
+    #dpp-{{ section.id }} .dpp-form-card { padding: 26px; border: 1px solid var(--dpp-line); background: var(--dpp-white); box-shadow: 0 18px 50px rgba(32,45,39,.1); }
+    #dpp-{{ section.id }} .dpp-form-banner { margin: -26px -26px 23px; padding: 14px 20px; color: white; background: var(--dpp-red); font-size: 12px; font-weight: 900; line-height: 1.4; }
+    #dpp-{{ section.id }} .dpp-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    #dpp-{{ section.id }} .dpp-field { display: flex; flex-direction: column; gap: 6px; }
+    #dpp-{{ section.id }} .dpp-field-full { grid-column: 1 / -1; }
+    #dpp-{{ section.id }} .dpp-field label { font-size: 10px; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+    #dpp-{{ section.id }} .dpp-field input,
+    #dpp-{{ section.id }} .dpp-field select,
+    #dpp-{{ section.id }} .dpp-field textarea {
+      width: 100%; min-height: 46px; padding: 11px 12px; border: 1px solid #b9c3c0;
+      border-radius: 2px; color: var(--dpp-ink); background: white; font: inherit; font-size: 12px;
+    }
+    #dpp-{{ section.id }} .dpp-field select:disabled { color: #777; background: #f0eee8; cursor: not-allowed; }
+    #dpp-{{ section.id }} .dpp-field textarea { min-height: 70px; resize: vertical; }
+    #dpp-{{ section.id }} .dpp-field input:focus,
+    #dpp-{{ section.id }} .dpp-field select:focus,
+    #dpp-{{ section.id }} .dpp-field textarea:focus { border-color: var(--dpp-green); outline: 2px solid rgba(53,83,75,.14); }
+    #dpp-{{ section.id }} .dpp-location-status { grid-column: 1 / -1; margin: 0; color: var(--dpp-muted); font-size: 11px; line-height: 1.5; }
+    #dpp-{{ section.id }} .dpp-submit {
+      width: 100%; min-height: 56px; margin-top: 18px; border: 0; border-radius: 999px;
+      color: var(--dpp-ink); background: #65b9c6; cursor: pointer; font-size: 16px;
+      font-weight: 950; letter-spacing: .06em;
+    }
+    #dpp-{{ section.id }} .dpp-status { margin: 13px 0 0; font-size: 12px; line-height: 1.5; }
+    #dpp-{{ section.id }} .dpp-status--success { padding: 12px; border-left: 3px solid var(--dpp-green); background: #edf4ed; }
+    #dpp-{{ section.id }} .dpp-status--error { color: #9b1c16; }
+    #dpp-{{ section.id }} .dpp-fineprint { margin: 10px 0 0; color: var(--dpp-muted); font-size: 10px; line-height: 1.55; text-align: center; }
+    #dpp-{{ section.id }} .dpp-buy-card { margin-top: 22px; padding-top: 19px; border-top: 1px solid var(--dpp-line); text-align: center; }
+    #dpp-{{ section.id }} .dpp-buy-card p { color: var(--dpp-muted); font-size: 12px; }
+    #dpp-{{ section.id }} .dpp-buy-card .dpp-button { width: 100%; }
+    #dpp-{{ section.id }} .dpp-buy-card .dpp-price { margin: 0 0 12px; color: var(--dpp-ink); font-size: 18px; font-weight: 800; }
+    @media (max-width: 800px) {
+      #dpp-{{ section.id }} .dpp-hero-grid { grid-template-columns: 1fr .8fr; gap: 32px; }
+      #dpp-{{ section.id }} .dpp-hero-art { min-height: 360px; }
+      #dpp-{{ section.id }} .dpp-order-layout { grid-template-columns: 1fr; gap: 20px; }
+      #dpp-{{ section.id }} .dpp-order-intro { position: static; }
+    }
+    @media (max-width: 620px) {
+      #dpp-{{ section.id }} .dpp-wrap { width: min(100% - 30px,480px); }
+      #dpp-{{ section.id }} .dpp-hero { padding: 50px 0 55px; }
+      #dpp-{{ section.id }} .dpp-hero-grid { grid-template-columns: 1fr; gap: 30px; }
+      #dpp-{{ section.id }} .dpp-hero-art { min-height: 360px; }
+      #dpp-{{ section.id }} .dpp-section { padding: 58px 0; }
+      #dpp-{{ section.id }} .dpp-poster-grid,
+      #dpp-{{ section.id }} .dpp-video-grid { grid-template-columns: 1fr; }
+      #dpp-{{ section.id }} .dpp-poster { min-height: 320px; }
+      #dpp-{{ section.id }} .dpp-video { min-height: 225px; }
+      #dpp-{{ section.id }} .dpp-order { padding: 58px 0; }
+      #dpp-{{ section.id }} .dpp-form-card { padding: 18px; }
+      #dpp-{{ section.id }} .dpp-form-banner { margin: -18px -18px 19px; padding: 13px 15px; }
+      #dpp-{{ section.id }} .dpp-form-grid { grid-template-columns: 1fr; gap: 11px; }
+      #dpp-{{ section.id }} .dpp-field-full { grid-column: auto; }
+    }
+  </style>
+
+  <div class="dpp-hero">
+    <div class="dpp-wrap dpp-hero-grid">
+      <div>
+        <span class="dpp-eyebrow">{{ section.settings.eyebrow | escape }}</span>
+        <h1>{{ section.settings.heading | escape }}</h1>
+        <div class="dpp-copy">{{ section.settings.intro }}</div>
+        <div class="dpp-actions">
+          <a class="dpp-button" href="#dpp-order-{{ section.id }}">{{ section.settings.cta_label | escape }}</a>
+          <a class="dpp-text-link" href="#dpp-posters-{{ section.id }}">Explore the product ↓</a>
+        </div>
+        {% if section.settings.disclaimer != blank %}
+          <p class="dpp-note">{{ section.settings.disclaimer | escape }}</p>
+        {% endif %}
+      </div>
+      <div class="dpp-hero-art">
+        {% if section.settings.hero_image != blank %}
+          {{ section.settings.hero_image | image_url: width: 1000 | image_tag: class: 'dpp-hero-image', loading: 'lazy', alt: section.settings.hero_image.alt }}
+        {% else %}
+          <div class="dpp-hero-copy">
+            <small>YOUR EVERYDAY CARE ROUTINE</small>
+            <strong>DEFENSE<br>PARASITE PLUS</strong>
+          </div>
+          <div class="dpp-bottle" aria-hidden="true">
+            <div class="dpp-bottle-label"><b>DEFENSE<br>PARASITE PLUS</b></div>
+          </div>
+          <div class="dpp-stamp">CARE<br>STARTS<br>WITH YOU</div>
+          <div class="dpp-hero-foot">A PRODUCT SPOTLIGHT · LEARN MORE BELOW</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <section class="dpp-section" id="dpp-posters-{{ section.id }}">
+    <div class="dpp-wrap">
+      <div class="dpp-heading">
+        <span class="dpp-eyebrow">{{ section.settings.poster_eyebrow | escape }}</span>
+        <h2>{{ section.settings.poster_heading | escape }}</h2>
+        <div>{{ section.settings.poster_intro }}</div>
+      </div>
+      <div class="dpp-poster-grid">
+        {% for block in section.blocks %}
+          {% if block.type == 'poster' %}
+            <article class="dpp-poster" {{ block.shopify_attributes }}>
+              {% if block.settings.image != blank %}
+                {{ block.settings.image | image_url: width: 900 | image_tag: class: 'dpp-poster-image', loading: 'lazy', alt: block.settings.image.alt }}
+              {% endif %}
+              <span class="dpp-poster-tag">{{ block.settings.tag | escape }}</span>
+              <h3>{{ block.settings.heading | escape }}</h3>
+              {% unless block.settings.image != blank %}
+                <div class="dpp-small-bottle" aria-hidden="true"></div>
+              {% endunless %}
+              <p>{{ block.settings.caption | escape }}</p>
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="dpp-section dpp-ads" id="dpp-ads-{{ section.id }}">
+    <div class="dpp-wrap">
+      <div class="dpp-heading">
+        <span class="dpp-eyebrow">{{ section.settings.video_eyebrow | escape }}</span>
+        <h2>{{ section.settings.video_heading | escape }}</h2>
+        <div>{{ section.settings.video_intro }}</div>
+      </div>
+      <div class="dpp-video-grid">
+        {% for block in section.blocks %}
+          {% if block.type == 'video' %}
+            <article class="dpp-video-card" {{ block.shopify_attributes }}>
+              <div class="dpp-video">
+                {% if block.settings.shopify_video != blank %}
+                  {{ block.settings.shopify_video | video_tag: controls: true, image_size: '1000x', preload: 'none' }}
+                {% elsif block.settings.external_video != blank %}
+                  {{ block.settings.external_video | external_video_url: autoplay: false | external_video_tag: loading: 'lazy' }}
+                {% else %}
+                  <div class="dpp-video-copy">
+                    <span>DEFENSE PARASITE PLUS · {{ forloop.index | prepend: 'AD 0' }}</span>
+                    <strong>{{ block.settings.title | escape }}</strong>
+                  </div>
+                {% endif %}
+              </div>
+              <div class="dpp-video-caption">
+                <h3>{{ block.settings.title | escape }}</h3>
+                {% if block.settings.caption != blank %}<p>{{ block.settings.caption | escape }}</p>{% endif %}
+              </div>
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="dpp-order" id="dpp-order-{{ section.id }}">
+    <div class="dpp-wrap dpp-order-layout">
+      <div class="dpp-order-intro">
+        <span class="dpp-eyebrow">{{ section.settings.form_eyebrow | escape }}</span>
+        <h2>{{ section.settings.form_heading | escape }}</h2>
+        <div>{{ section.settings.form_intro }}</div>
+      </div>
+      <div>
+        {% form 'contact', id: contact_form_id, class: 'dpp-form-card' %}
+          <div class="dpp-form-banner">{{ section.settings.form_banner | escape }}</div>
+          {% if form.posted_successfully? %}
+            <p class="dpp-status dpp-status--success" role="status">{{ section.settings.success_message | escape }}</p>
+          {% endif %}
+          {% if form.errors %}
+            <div class="dpp-status dpp-status--error" role="alert">{{ form.errors | default_errors }}</div>
+          {% endif %}
+          <input type="hidden" name="contact[subject]" value="{{ section.settings.form_subject | escape }}">
+          <div class="dpp-form-grid">
+            <div class="dpp-field">
+              <label for="dpp-first-{{ section.id }}">First name</label>
+              <input id="dpp-first-{{ section.id }}" name="contact[first_name]" autocomplete="given-name" placeholder="PANGALAN" required>
+            </div>
+            <div class="dpp-field">
+              <label for="dpp-last-{{ section.id }}">Last name</label>
+              <input id="dpp-last-{{ section.id }}" name="contact[last_name]" autocomplete="family-name" placeholder="APELYIDO" required>
+            </div>
+            <div class="dpp-field dpp-field-full">
+              <label for="dpp-email-{{ section.id }}">Email</label>
+              <input id="dpp-email-{{ section.id }}" type="email" name="contact[email]" autocomplete="email" placeholder="you@example.com" required>
+            </div>
+            <div class="dpp-field dpp-field-full">
+              <label for="dpp-address-{{ section.id }}">Address</label>
+              <input id="dpp-address-{{ section.id }}" name="contact[address]" autocomplete="street-address" placeholder="PRK. / HOUSE# / BLDG.# / ST." required>
+            </div>
+            <div class="dpp-field">
+              <label for="dpp-province-{{ section.id }}">Province</label>
+              <select id="dpp-province-{{ section.id }}" name="contact[province]" autocomplete="address-level1" required disabled>
+                <option value="">Loading provinces…</option>
+              </select>
+            </div>
+            <div class="dpp-field">
+              <label for="dpp-city-{{ section.id }}">City / Municipality</label>
+              <select id="dpp-city-{{ section.id }}" name="contact[city]" autocomplete="address-level2" required disabled>
+                <option value="">Select a province first</option>
+              </select>
+            </div>
+            <div class="dpp-field">
+              <label for="dpp-barangay-{{ section.id }}">Barangay</label>
+              <select id="dpp-barangay-{{ section.id }}" name="contact[barangay]" required disabled>
+                <option value="">Select a city / municipality first</option>
+              </select>
+            </div>
+            <p class="dpp-location-status" id="dpp-location-status-{{ section.id }}" role="status" aria-live="polite"></p>
+            <div class="dpp-field">
+              <label for="dpp-mobile-{{ section.id }}">Mobile #</label>
+              <input id="dpp-mobile-{{ section.id }}" name="contact[phone]" type="tel" autocomplete="tel" inputmode="tel" placeholder="09XXXXXXXXX" required>
+            </div>
+            <div class="dpp-field dpp-field-full">
+              <label for="dpp-notes-{{ section.id }}">Notes / Landmark</label>
+              <textarea id="dpp-notes-{{ section.id }}" name="contact[body]" placeholder="NOTE / PALATANDAAN / MALAPIT SA?"></textarea>
+            </div>
+          </div>
+          <button class="dpp-submit" type="submit">{{ section.settings.submit_label | escape }}</button>
+          <p class="dpp-fineprint">{{ section.settings.form_disclaimer | escape }}</p>
+        {% endform %}
+
+        {% if featured_product != blank %}
+          <div class="dpp-buy-card">
+            <p>To place and pay for an order through Shopify checkout:</p>
+            {% form 'product', featured_product, id: product_form_id %}
+              <input type="hidden" name="id" value="{{ product_variant.id }}">
+              <p class="dpp-price">{{ product_variant.price | money }}</p>
+              {% if product_variant.available %}
+                <button class="dpp-button" type="submit" name="add">Add {{ featured_product.title | escape }} to cart</button>
+              {% else %}
+                <button class="dpp-button" type="button" disabled>Currently unavailable</button>
+              {% endif %}
+            {% endform %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+</section>
+
+<script>
+  (function () {
+    var sectionId = {{ section.id | json }};
+    var root = document.getElementById('dpp-' + sectionId);
+    if (!root || root.dataset.dppLocationsReady === 'true') return;
+    root.dataset.dppLocationsReady = 'true';
+
+    var provinceSelect = root.querySelector('#dpp-province-' + sectionId);
+    var citySelect = root.querySelector('#dpp-city-' + sectionId);
+    var barangaySelect = root.querySelector('#dpp-barangay-' + sectionId);
+    var status = root.querySelector('#dpp-location-status-' + sectionId);
+    var apiBase = 'https://psgc.gitlab.io/api';
+    var requests = new Map();
+    var ncrRegionCode = '130000000';
+
+    function fetchList(path) {
+      if (!requests.has(path)) {
+        var request = fetch(apiBase + '/' + path).then(function (response) {
+          if (!response.ok) throw new Error('Location service returned HTTP ' + response.status);
+          return response.json();
+        }).then(function (items) {
+          if (!Array.isArray(items)) throw new Error('Location service returned an invalid list');
+          return items;
+        }).catch(function (error) {
+          requests.delete(path);
+          throw error;
+        });
+        requests.set(path, request);
+      }
+      return requests.get(path);
+    }
+
+    function resetSelect(select, placeholder) {
+      select.options.length = 0;
+      select.add(new Option(placeholder, ''));
+      select.disabled = true;
+    }
+
+    function fillSelect(select, items, placeholder) {
+      resetSelect(select, placeholder);
+      items.slice().sort(function (a, b) {
+        return a.name.localeCompare(b.name);
+      }).forEach(function (item) {
+        var option = new Option(item.name, item.name);
+        option.dataset.code = item.code;
+        select.add(option);
+      });
+      select.disabled = items.length === 0;
+      if (items.length === 0) status.textContent = 'No locations were found for this selection.';
+    }
+
+    function selectedCode(select) {
+      return select.selectedOptions.length ? select.selectedOptions[0].dataset.code : '';
+    }
+
+    resetSelect(citySelect, 'Select a province first');
+    resetSelect(barangaySelect, 'Select a city / municipality first');
+    status.textContent = 'Loading Philippine locations…';
+
+    fetchList('provinces/').then(function (provinces) {
+      provinces.push({ code: ncrRegionCode, name: 'Metro Manila (NCR)' });
+      fillSelect(provinceSelect, provinces, '1. Select province');
+      status.textContent = 'Location lists provided by the Philippine Standard Geographic Code (PSGC) API.';
+    }).catch(function (error) {
+      resetSelect(provinceSelect, 'Could not load provinces');
+      status.textContent = 'Unable to load Philippine locations. Check your connection and reload the page to try again.';
+      console.error('Unable to load PSGC provinces:', error);
+    });
+
+    provinceSelect.addEventListener('change', function () {
+      var provinceCode = selectedCode(provinceSelect);
+      resetSelect(citySelect, provinceCode ? 'Loading cities / municipalities…' : 'Select a province first');
+      resetSelect(barangaySelect, 'Select a city / municipality first');
+      if (!provinceCode) return;
+
+      status.textContent = 'Loading cities and municipalities…';
+      var path = provinceCode === ncrRegionCode
+        ? 'regions/' + ncrRegionCode + '/cities-municipalities/'
+        : 'provinces/' + encodeURIComponent(provinceCode) + '/cities-municipalities/';
+
+      fetchList(path).then(function (cities) {
+        if (selectedCode(provinceSelect) !== provinceCode) return;
+        fillSelect(citySelect, cities, '2. Select city / municipality');
+        status.textContent = cities.length
+          ? 'Choose a city or municipality to load its barangays.'
+          : 'No cities or municipalities were found for this province.';
+      }).catch(function (error) {
+        if (selectedCode(provinceSelect) !== provinceCode) return;
+        provinceSelect.value = '';
+        resetSelect(citySelect, 'Could not load cities / municipalities');
+        status.textContent = 'Unable to load this city list. Please choose the province again to retry.';
+        console.error('Unable to load PSGC cities and municipalities:', error);
+      });
+    });
+
+    citySelect.addEventListener('change', function () {
+      var cityCode = selectedCode(citySelect);
+      resetSelect(barangaySelect, cityCode ? 'Loading barangays…' : 'Select a city / municipality first');
+      if (!cityCode) return;
+
+      status.textContent = 'Loading barangays…';
+      fetchList('cities-municipalities/' + encodeURIComponent(cityCode) + '/barangays/').then(function (barangays) {
+        if (selectedCode(citySelect) !== cityCode) return;
+        fillSelect(barangaySelect, barangays, '3. Select barangay');
+        status.textContent = barangays.length
+          ? 'Select your barangay to complete the delivery address.'
+          : 'No barangays were found for this city or municipality.';
+      }).catch(function (error) {
+        if (selectedCode(citySelect) !== cityCode) return;
+        citySelect.value = '';
+        resetSelect(barangaySelect, 'Could not load barangays');
+        status.textContent = 'Unable to load this barangay list. Please choose the city / municipality again to retry.';
+        console.error('Unable to load PSGC barangays:', error);
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Defense Parasite landing",
+  "tag": "section",
+  "class": "section-defense-parasite-landing",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Hero eyebrow", "default": "Meet Defense Parasite Plus" },
+    { "type": "text", "id": "heading", "label": "Hero heading", "default": "A little more care in every day." },
+    { "type": "richtext", "id": "intro", "label": "Hero text", "default": "<p>Discover Defense Parasite Plus. Explore the product, watch our campaign videos, and send an order request below.</p>" },
+    { "type": "image_picker", "id": "hero_image", "label": "Hero product image (optional)" },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "ORDER NOW" },
+    { "type": "text", "id": "disclaimer", "label": "Product disclaimer", "default": "Please read the product label and consult a qualified professional if you have questions about use." },
+    { "type": "text", "id": "poster_eyebrow", "label": "Poster section eyebrow", "default": "Product spotlight" },
+    { "type": "text", "id": "poster_heading", "label": "Poster section heading", "default": "Get to know the product" },
+    { "type": "richtext", "id": "poster_intro", "label": "Poster section text", "default": "<p>Add your approved product images and campaign posters using the blocks below.</p>" },
+    { "type": "text", "id": "video_eyebrow", "label": "Video section eyebrow", "default": "Watch our ads" },
+    { "type": "text", "id": "video_heading", "label": "Video section heading", "default": "Two campaign videos" },
+    { "type": "richtext", "id": "video_intro", "label": "Video section text", "default": "<p>Add Shopify-hosted video or a YouTube/Vimeo link to each video block.</p>" },
+    { "type": "text", "id": "form_eyebrow", "label": "Order form eyebrow", "default": "Step #2 · Order details" },
+    { "type": "text", "id": "form_heading", "label": "Order form heading", "default": "Tell us where to send your order." },
+    { "type": "richtext", "id": "form_intro", "label": "Order form text", "default": "<p>Send your delivery details to the store. This form sends an order request; it does not create or charge a Shopify order.</p>" },
+    { "type": "text", "id": "form_banner", "label": "Order form banner", "default": "STEP #2: KUMPLETUHIN ANG DETALYE PARA MAAYOS ANG DELIVERY" },
+    { "type": "text", "id": "submit_label", "label": "Submit button label", "default": "SEND ORDER REQUEST" },
+    { "type": "text", "id": "success_message", "label": "Success message", "default": "Thank you. Your order request was sent to the store." },
+    { "type": "text", "id": "form_subject", "label": "Contact email subject", "default": "Defense Parasite Plus order request" },
+    { "type": "text", "id": "form_disclaimer", "label": "Form note", "default": "Your request is emailed to the store contact address. The store will follow up to confirm your order." },
+    { "type": "product", "id": "product", "label": "Shopify product for cart checkout" }
+  ],
+  "blocks": [
+    {
+      "type": "poster",
+      "name": "Product poster",
+      "settings": [
+        { "type": "text", "id": "tag", "label": "Small heading", "default": "DEFENSE PARASITE PLUS" },
+        { "type": "text", "id": "heading", "label": "Poster heading", "default": "Care begins with being informed." },
+        { "type": "text", "id": "caption", "label": "Poster caption", "default": "Explore the product and read its approved label." },
+        { "type": "image_picker", "id": "image", "label": "Poster image (optional)" }
+      ]
+    },
+    {
+      "type": "video",
+      "name": "Ad video",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Video title", "default": "A closer look at the product" },
+        { "type": "text", "id": "caption", "label": "Video caption", "default": "Defense Parasite Plus campaign video" },
+        { "type": "video", "id": "shopify_video", "label": "Shopify-hosted video" },
+        { "type": "video_url", "id": "external_video", "label": "YouTube or Vimeo URL", "accept": ["youtube", "vimeo"] }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Defense Parasite landing",
+      "blocks": [
+        { "type": "poster", "settings": { "tag": "DEFENSE PARASITE PLUS", "heading": "A thoughtful choice for your routine." } },
+        { "type": "poster", "settings": { "tag": "MADE FOR YOUR DAY", "heading": "Care begins with being informed." } },
+        { "type": "poster", "settings": { "tag": "PRODUCT SPOTLIGHT", "heading": "Discover Defense Parasite Plus." } },
+        { "type": "video", "settings": { "title": "Ad 01 — Product introduction" } },
+        { "type": "video", "settings": { "title": "Ad 02 — Get to know the product" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
